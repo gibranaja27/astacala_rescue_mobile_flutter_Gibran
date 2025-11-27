@@ -25,6 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _filteredBerita = [];
   final TextEditingController _searchController = TextEditingController();
 
+  // ADDED: dynamic counters (digunakan untuk menggantikan nilai statis pada header)
+  int laporanCount = 0; // ADDED: jumlah pelaporan aktif
+  int teamCount = 0; // ADDED: jumlah nama_team_pelapor unik
+
   @override
   void initState() {
     super.initState();
@@ -68,9 +72,33 @@ class _HomeScreenState extends State<HomeScreen> {
         _allBerita = berita;
         _filteredBerita = berita;
       });
+
+      // ADDED: update statistik header setelah berita berhasil dimuat
+      _updateHeaderCounts();
     } catch (e) {
       debugPrint('Gagal memuat berita: $e');
     }
+  }
+
+  // ADDED: fungsi untuk menghitung laporan dan jumlah tim unik
+  void _updateHeaderCounts() {
+    // jumlah pelaporan = panjang list berita
+    final int total = _allBerita.length;
+
+    // jumlah tim unik berdasarkan nama_team_pelapor
+    final Set<String> teams = {};
+    for (final b in _allBerita) {
+      final t = b['nama_team_pelapor'];
+      if (t != null) {
+        final s = t.toString().trim();
+        if (s.isNotEmpty) teams.add(s);
+      }
+    }
+
+    setState(() {
+      laporanCount = total;
+      teamCount = teams.length;
+    });
   }
 
   void _filterBerita(String keyword) {
@@ -142,6 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                         _fetchUnreadNotif(profile!['id']);
+                        // ADDED: refresh berita ketika kembali dari halaman notifikasi
+                        _fetchBerita();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Profil belum dimuat.")),
@@ -182,7 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _smallHeaderCard(
                   title: 'Laporan Aktif',
-                  value: '12',
+                  // ADDED: gunakan laporanCount yang dihitung dari API
+                  value: laporanCount.toString(),
                   icon: Icons.warning_amber_rounded,
                 ),
               ),
@@ -190,7 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _smallHeaderCard(
                   title: 'Tim Siaga',
-                  value: '8',
+                  // ADDED: gunakan teamCount yang dihitung dari API (nama_team_pelapor unik)
+                  value: teamCount.toString(),
                   icon: Icons.group,
                 ),
               ),
@@ -281,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _actionCard(
               icon: Icons.notifications_active,
-              iconColor: Colors.red,
+              iconColor: Color(0xFF7A0909),
               title: 'Lapor Bencana',
               subtitle: 'Laporkan kejadian darurat',
               onTap: () => setState(() => _selectedIndex = 1),
@@ -391,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: ctx,
       builder: (_) => Dialog(
         insetPadding: const EdgeInsets.all(12),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         child: SizedBox(
           width: double.infinity,
           height: MediaQuery.of(ctx).size.height * 0.85,
@@ -399,7 +431,10 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(12),
             child: Scaffold(
               appBar: AppBar(
-                title: const Text('Lokasi Bencana'),
+                title: const Text(
+                  'Lokasi Bencana',
+                  style: TextStyle(color: Colors.white),
+                ),
                 backgroundColor: const Color(0xFF7A0909),
                 actions: [
                   IconButton(
@@ -561,8 +596,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           TextButton(
                             onPressed: () {
-                              // ADDED: buka popup peta untuk berita ini
-                              _showMapPopupForBerita(context, berita); // ADDED
+                              //buka popup peta untuk berita ini
+                              _showMapPopupForBerita(context, berita);
                             },
                             child: const Text(
                               'Lihat Peta',
