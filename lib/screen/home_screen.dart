@@ -220,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _smallHeaderCard(
-                  title: 'Tim Siaga',
+                  title: 'Tim tanggap',
                   // ADDED: gunakan teamCount yang dihitung dari API (nama_team_pelapor unik)
                   value: teamCount.toString(),
                   icon: Icons.group,
@@ -398,7 +398,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --------------- MAP DIALOG helper (ADDED) ----------------
   // show map popup for a single berita with coordinates
   void _showMapPopupForBerita(BuildContext ctx, dynamic berita) {
     final titik = berita['titik_kordinat_lokasi_bencana'];
