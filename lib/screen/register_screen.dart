@@ -76,7 +76,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
-                hintText: "Username",
+                hintText: "Masukkan Username",
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 filled: true,
@@ -98,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                hintText: "Password",
+                hintText: "Masukkan Password",
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 filled: true,

@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _usernameController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person_outline),
-                        labelText: "Username Atau Email",
+                        labelText: "Masukkan Username",
                         labelStyle: TextStyle(color: Colors.black54),
                         border: UnderlineInputBorder(),
                       ),
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: true,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_outline),
-                        labelText: "Password",
+                        labelText: "Masukkan Password",
                         labelStyle: TextStyle(color: Colors.black54),
                         border: UnderlineInputBorder(),
                       ),
