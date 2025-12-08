@@ -6,6 +6,7 @@ import 'notifikasi.dart';
 import 'detail_berita_screen.dart';
 import 'profile_screen.dart';
 import 'peta_bencana_screen.dart'; // ADDED (untuk navigation ke peta global)
+import 'full_berita_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,12 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // untuk pencarian
   List<dynamic> _allBerita = [];
-  List<dynamic> _filteredBerita = [];
-  final TextEditingController _searchController = TextEditingController();
-
-  // ADDED: dynamic counters (digunakan untuk menggantikan nilai statis pada header)
-  int laporanCount = 0; // ADDED: jumlah pelaporan aktif
-  int teamCount = 0; // ADDED: jumlah nama_team_pelapor unik
 
   @override
   void initState() {
@@ -70,50 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
       final berita = await ApiService.getBeritaBencana();
       setState(() {
         _allBerita = berita;
-        _filteredBerita = berita;
       });
-
-      // ADDED: update statistik header setelah berita berhasil dimuat
-      _updateHeaderCounts();
     } catch (e) {
       debugPrint('Gagal memuat berita: $e');
     }
-  }
-
-  // ADDED: fungsi untuk menghitung laporan dan jumlah tim unik
-  void _updateHeaderCounts() {
-    // jumlah pelaporan = panjang list berita
-    final int total = _allBerita.length;
-
-    // jumlah tim unik berdasarkan nama_team_pelapor
-    final Set<String> teams = {};
-    for (final b in _allBerita) {
-      final t = b['nama_team_pelapor'];
-      if (t != null) {
-        final s = t.toString().trim();
-        if (s.isNotEmpty) teams.add(s);
-      }
-    }
-
-    setState(() {
-      laporanCount = total;
-      teamCount = teams.length;
-    });
-  }
-
-  void _filterBerita(String keyword) {
-    setState(() {
-      if (keyword.isEmpty) {
-        _filteredBerita = _allBerita;
-      } else {
-        _filteredBerita = _allBerita
-            .where((b) => (b['informasi_singkat_bencana'] ?? '')
-                .toString()
-                .toLowerCase()
-                .contains(keyword.toLowerCase()))
-            .toList();
-      }
-    });
   }
 
   void _logout() async {
@@ -206,28 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 12),
-
-          Row(
-            children: [
-              Expanded(
-                child: _smallHeaderCard(
-                  title: 'Laporan Aktif',
-                  // ADDED: gunakan laporanCount yang dihitung dari API
-                  value: laporanCount.toString(),
-                  icon: Icons.warning_amber_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _smallHeaderCard(
-                  title: 'Tim tanggap',
-                  // ADDED: gunakan teamCount yang dihitung dari API (nama_team_pelapor unik)
-                  value: teamCount.toString(),
-                  icon: Icons.group,
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -273,33 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSearchField() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: TextField(
-        controller: _searchController,
-        onChanged: _filterBerita,
-        decoration: InputDecoration(
-          hintText: 'Cari berita resque terkini',
-          prefixIcon: const Icon(Icons.search),
-          filled: true,
-          fillColor: Colors.grey[100],
-          isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none),
-        ),
-      ),
-    );
-  }
-
   Widget _buildQuickActions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const SizedBox(height: 20),
         const Text(
           'Aksi Cepat',
           style: TextStyle(
@@ -644,27 +554,45 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildHeader(),
           const SizedBox(height: 20),
-          _buildSearchField(),
           const SizedBox(height: 10),
           _buildQuickActions(),
           const SizedBox(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Berita Terkini',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            children: [
+              Text(
+                'Berita Terkini',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              // Tombol "Lihat Selengkapnya"
+              TextButton(
+                onPressed: () {
+                  // sementara kosong (tidak direct ke mana-mana)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => FullBeritaListScreen()),
+                  );
+                },
+                child: Text(
+                  'Lihat Selengkapnya',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(
+                        255, 192, 0, 0), // bisa diganti sesuai tema
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
           if (_allBerita.isEmpty)
-            const Center(child: CircularProgressIndicator())
-          else if (_filteredBerita.isEmpty)
-            const Text("Tidak ada berita yang cocok dengan pencarian.")
-          else
-            Column(
-              children:
-                  _filteredBerita.map((b) => _buildBeritaCard(b)).toList(),
-            ),
+            const Center(child: CircularProgressIndicator()),
+          Column(
+            children:
+                _allBerita.take(4).map((b) => _buildBeritaCard(b)).toList(),
+          ),
           const SizedBox(height: 40),
         ],
       ),

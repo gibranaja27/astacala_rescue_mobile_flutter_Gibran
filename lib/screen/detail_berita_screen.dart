@@ -75,8 +75,7 @@ class DetailBeritaScreen extends StatelessWidget {
                 "Titik Koordinat", berita['titik_kordinat_lokasi_bencana']),
             _buildInfoRow("Skala Bencana", berita['skala_bencana']),
             _buildInfoRow("Jumlah Korban", berita['jumlah_korban'].toString()),
-            _buildInfoRow(
-                "Deskripsi", berita['deskripsi_terkait_data_lainya']),
+            _buildInfoRow("Deskripsi", berita['deskripsi_terkait_data_lainya']),
 
             const SizedBox(height: 20),
           ],
