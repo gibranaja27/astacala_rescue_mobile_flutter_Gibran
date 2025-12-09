@@ -1,5 +1,6 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../service/api_service.dart';
 import 'report_screen.dart';
 import 'notifikasi.dart';
@@ -444,11 +445,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Icon(Icons.location_on,
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text(berita['lokasi_bencana'] ?? '-',
-                          style: const TextStyle(color: Colors.grey)),
+                      Text(
+                        ((berita['lokasi_bencana'] ?? '-') as String).length >
+                                45
+                            ? "${(berita['lokasi_bencana'] ?? '-').substring(0, 45)}..."
+                            : (berita['lokasi_bencana'] ?? '-'),
+                        style: const TextStyle(color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 8),
                   const SizedBox(height: 8),
                   if (lat != null && lon != null)
                     FutureBuilder<Map<String, dynamic>?>(
@@ -492,6 +499,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   else
                     const Text("Koordinat tidak tersedia.",
                         style: TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 12),
+                  Text(
+                    (berita['updated_at'] ?? '-')
+                        .toString()
+                        .replaceAll('T', ' ')
+                        .replaceAll('Z', '')
+                        .split('.')
+                        .first,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF7A0909)),
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

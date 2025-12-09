@@ -131,8 +131,13 @@ class _FullBeritaListScreenState extends State<FullBeritaListScreen> {
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
-                        berita['lokasi_bencana'] ?? '-',
+                        ((berita['lokasi_bencana'] ?? '-') as String).length >
+                                45
+                            ? "${(berita['lokasi_bencana'] ?? '-').substring(0, 45)}..."
+                            : (berita['lokasi_bencana'] ?? '-'),
                         style: const TextStyle(color: Colors.grey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
