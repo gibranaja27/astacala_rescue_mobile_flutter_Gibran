@@ -171,7 +171,40 @@ class _ReportScreenState extends State<ReportScreen> {
                   _buildTextField(_lokasiController, 'Nama Lokasi Bencana'),
                   _buildTextField(_titikKordinatController,
                       'Titik Koordinat Lokasi Yang Terdampak'),
-                  _buildTextField(_skalaController, 'Skala Bencana'),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: DropdownButtonFormField<String>(
+                      value: _skalaController.text.isEmpty
+                          ? null
+                          : _skalaController.text,
+                      decoration: InputDecoration(
+                        labelText: "Skala Bencana",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 167, 28, 26),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: "Kecil", child: Text("Kecil")),
+                        DropdownMenuItem(
+                            value: "Sedang", child: Text("Sedang")),
+                        DropdownMenuItem(value: "Besar", child: Text("Besar")),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _skalaController.text = value!;
+                        });
+                      },
+                      validator: (value) => value == null || value.isEmpty
+                          ? "Wajib dipilih"
+                          : null,
+                    ),
+                  ),
                   _buildTextField(_jumlahKorbanController, 'Jumlah Korban',
                       type: TextInputType.number),
                   _buildTextField(_deskripsiController, 'Deskripsi (opsional)',
