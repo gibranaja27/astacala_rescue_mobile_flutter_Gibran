@@ -17,8 +17,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String namaLengkap =
-        profile?['nama_lengkap_pengguna'] ?? 'Pengguna';
+    final String namaLengkap = profile?['nama_lengkap_pengguna'] ?? 'Pengguna';
     final String username = profile?['username_akun_pengguna'] ?? 'username';
 
     return Scaffold(
@@ -73,30 +72,6 @@ class ProfileScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 40),
-
-              // Tombol Edit Profil
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.edit, color: Colors.white),
-                label: const Text(
-                  "Edit Profil",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB70000),
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 3,
-                ),
-              ),
-
-              const SizedBox(height: 16),
 
               // Tombol Logout
               ElevatedButton.icon(

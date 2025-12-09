@@ -16,10 +16,12 @@ class _ReportScreenState extends State<ReportScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _teamController = TextEditingController();
-  final TextEditingController _jumlahPersonelController = TextEditingController();
+  final TextEditingController _jumlahPersonelController =
+      TextEditingController();
   final TextEditingController _infoSingkatController = TextEditingController();
   final TextEditingController _lokasiController = TextEditingController();
-  final TextEditingController _titikKordinatController = TextEditingController();
+  final TextEditingController _titikKordinatController =
+      TextEditingController();
   final TextEditingController _skalaController = TextEditingController();
   final TextEditingController _jumlahKorbanController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
@@ -32,15 +34,14 @@ class _ReportScreenState extends State<ReportScreen> {
   final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final XFile? xfile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    final XFile? xfile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
     if (xfile != null) setState(() => _pickedImage = File(xfile.path));
   }
 
   Future<void> _pickPdf() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom, 
-      allowedExtensions: ['pdf']
-    );
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
     if (result != null && result.files.single.path != null) {
       setState(() => _pickedPdf = File(result.files.single.path!));
     }
@@ -71,15 +72,17 @@ class _ReportScreenState extends State<ReportScreen> {
 
       if (_pickedImage != null) {
         final filename = p.basename(_pickedImage!.path);
-        formMap['foto_lokasi_bencana'] =
-            await MultipartFile.fromFile(_pickedImage!.path, filename: filename);
+        formMap['foto_lokasi_bencana'] = await MultipartFile.fromFile(
+            _pickedImage!.path,
+            filename: filename);
       }
 
       if (_pickedPdf != null) {
         final filename = p.basename(_pickedPdf!.path);
-        formMap['bukti_surat_perintah_tugas'] =
-            await MultipartFile.fromFile(_pickedPdf!.path,
-                filename: filename, contentType: MediaType('application', 'pdf'));
+        formMap['bukti_surat_perintah_tugas'] = await MultipartFile.fromFile(
+            _pickedPdf!.path,
+            filename: filename,
+            contentType: MediaType('application', 'pdf'));
       }
 
       final formData = FormData.fromMap(formMap);
@@ -102,8 +105,8 @@ class _ReportScreenState extends State<ReportScreen> {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Pelaporan berhasil dikirim')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Pelaporan berhasil dikirim')));
         _formKey.currentState!.reset();
         setState(() {
           _pickedImage = null;
@@ -119,8 +122,7 @@ class _ReportScreenState extends State<ReportScreen> {
       }
     } on DioError catch (e) {
       String msg = e.response?.data?['message'] ?? e.toString();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(msg)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       setState(() => _loading = false);
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -131,7 +133,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final maroon = Color.fromARGB(255, 167, 28, 26); // warna branding maroon/coklat tua
+    final maroon =
+        Color.fromARGB(255, 167, 28, 26); // warna branding maroon/coklat tua
 
     return Scaffold(
       appBar: AppBar(
@@ -151,7 +154,8 @@ class _ReportScreenState extends State<ReportScreen> {
         padding: const EdgeInsets.all(16),
         child: Card(
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Form(
@@ -162,9 +166,11 @@ class _ReportScreenState extends State<ReportScreen> {
                   _buildTextField(_teamController, 'Nama Team Pelapor'),
                   _buildTextField(_jumlahPersonelController, 'Jumlah Personel',
                       type: TextInputType.number),
-                  _buildTextField(_infoSingkatController, 'Informasi Singkat Bencana'),
-                  _buildTextField(_lokasiController, 'Lokasi Bencana'),
-                  _buildTextField(_titikKordinatController, 'Titik Koordinat (lat,lng)'),
+                  _buildTextField(
+                      _infoSingkatController, 'Informasi Singkat Bencana'),
+                  _buildTextField(_lokasiController, 'Nama Lokasi Bencana'),
+                  _buildTextField(_titikKordinatController,
+                      'Titik Koordinat Lokasi Yang Terdampak'),
                   _buildTextField(_skalaController, 'Skala Bencana'),
                   _buildTextField(_jumlahKorbanController, 'Jumlah Korban',
                       type: TextInputType.number),
@@ -179,7 +185,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         : 'Ganti Foto',
                     icon: Icons.photo,
                     onPressed: _pickImage,
-                    filename: _pickedImage != null ? p.basename(_pickedImage!.path) : null,
+                    filename: _pickedImage != null
+                        ? p.basename(_pickedImage!.path)
+                        : null,
                     color: maroon,
                   ),
 
@@ -191,7 +199,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         _pickedPdf == null ? 'Pilih Bukti (PDF)' : 'Ganti PDF',
                     icon: Icons.picture_as_pdf,
                     onPressed: _pickPdf,
-                    filename: _pickedPdf != null ? p.basename(_pickedPdf!.path) : null,
+                    filename: _pickedPdf != null
+                        ? p.basename(_pickedPdf!.path)
+                        : null,
                     color: maroon,
                   ),
 
@@ -235,7 +245,9 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildTextField(TextEditingController controller, String label,
-      {TextInputType type = TextInputType.text, int maxLines = 1, bool required = true}) {
+      {TextInputType type = TextInputType.text,
+      int maxLines = 1,
+      bool required = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextFormField(
@@ -249,7 +261,8 @@ class _ReportScreenState extends State<ReportScreen> {
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color.fromARGB(255, 167, 28, 26), width: 2),
+            borderSide:
+                BorderSide(color: Color.fromARGB(255, 167, 28, 26), width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
         ),

@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
               iconColor: Color(0xFF7A0909),
               title: 'Lapor Bencana',
               subtitle: 'Laporkan kejadian darurat',
-              onTap: () => setState(() => _selectedIndex = 1),
+              onTap: () {},
             ),
             const SizedBox(width: 18),
             _actionCard(
@@ -234,12 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
               iconColor: Colors.green,
               title: 'Peta Bencana',
               subtitle: 'Lihat peta lokasi bencana',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PetaBencanaScreen()),
-                );
-              },
+              onTap: () {},
             ),
           ],
         ),
