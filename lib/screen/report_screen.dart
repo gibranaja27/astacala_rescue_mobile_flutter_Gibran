@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:geolocator/geolocator.dart';
 import '../service/api_service.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -130,6 +131,53 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() => _loading = false);
     }
   }
+  Future<void> _getCurrentLocation() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Cek apakah GPS aktif
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("GPS tidak aktif, aktifkan terlebih dahulu"))
+    );
+    return;
+  }
+
+  // Cek permission
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Izin lokasi ditolak"))
+      );
+      return;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Izin lokasi ditolak permanen. Aktifkan via Settings."))
+    );
+    return;
+  }
+
+  // Ambil lokasi
+  final position = await Geolocator.getCurrentPosition(
+    desiredAccuracy: LocationAccuracy.high,
+  );
+
+  setState(() {
+    _titikKordinatController.text =
+        "${position.latitude}, ${position.longitude}";
+  });
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Lokasi berhasil diambil"))
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +217,29 @@ class _ReportScreenState extends State<ReportScreen> {
                   _buildTextField(
                       _infoSingkatController, 'Informasi Singkat Bencana'),
                   _buildTextField(_lokasiController, 'Nama Lokasi Bencana'),
-                  _buildTextField(_titikKordinatController,
-                      'Titik Koordinat Lokasi Yang Terdampak'),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: TextFormField(
+                      controller: _titikKordinatController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'Titik Koordinat Lokasi Yang Terdampak',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.my_location, color: maroon),
+                          onPressed: _getCurrentLocation,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: maroon, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? 'Wajib diisi' : null,
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 14),
                     child: DropdownButtonFormField<String>(
