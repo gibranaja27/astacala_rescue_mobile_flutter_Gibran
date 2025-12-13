@@ -131,53 +131,50 @@ class _ReportScreenState extends State<ReportScreen> {
       setState(() => _loading = false);
     }
   }
+
   Future<void> _getCurrentLocation() async {
-  bool serviceEnabled;
-  LocationPermission permission;
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  // Cek apakah GPS aktif
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("GPS tidak aktif, aktifkan terlebih dahulu"))
-    );
-    return;
-  }
-
-  // Cek permission
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
+    // Cek apakah GPS aktif
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Izin lokasi ditolak"))
-      );
+          SnackBar(content: Text("GPS tidak aktif, aktifkan terlebih dahulu")));
       return;
     }
-  }
 
-  if (permission == LocationPermission.deniedForever) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Izin lokasi ditolak permanen. Aktifkan via Settings."))
+    // Cek permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Izin lokasi ditolak")));
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text("Izin lokasi ditolak permanen. Aktifkan via Settings.")));
+      return;
+    }
+
+    // Ambil lokasi
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
     );
-    return;
+
+    setState(() {
+      _titikKordinatController.text =
+          "${position.latitude}, ${position.longitude}";
+    });
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Lokasi berhasil diambil")));
   }
-
-  // Ambil lokasi
-  final position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.high,
-  );
-
-  setState(() {
-    _titikKordinatController.text =
-        "${position.latitude}, ${position.longitude}";
-  });
-
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Lokasi berhasil diambil"))
-  );
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -231,8 +228,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           onPressed: _getCurrentLocation,
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: maroon, width: 2),
+                          borderSide: BorderSide(color: maroon, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
@@ -297,8 +293,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
                   // Tombol Pilih PDF
                   _buildUploadButton(
-                    label:
-                        _pickedPdf == null ? 'Pilih Bukti (PDF)' : 'Ganti PDF',
+                    label: _pickedPdf == null
+                        ? 'Pilih File Bukti Surat Tugas (PDF)'
+                        : 'Ganti PDF',
                     icon: Icons.picture_as_pdf,
                     onPressed: _pickPdf,
                     filename: _pickedPdf != null
