@@ -279,7 +279,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   // Tombol Pilih Gambar
                   _buildUploadButton(
                     label: _pickedImage == null
-                        ? 'Pilih Foto Lokasi'
+                        ? 'Pilih Foto Lokasi Bencana'
                         : 'Ganti Foto',
                     icon: Icons.photo,
                     onPressed: _pickImage,
