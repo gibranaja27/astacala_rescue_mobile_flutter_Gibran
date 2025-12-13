@@ -124,7 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 NotifikasiPage(penggunaId: profile!['id']),
                           ),
                         );
-                        _fetchUnreadNotif(profile!['id']);
+
+// 🔥 RESET BADGE LANGSUNG
+                        setState(() {
+                          unreadCount = 0;
+                        });
                         // ADDED: refresh berita ketika kembali dari halaman notifikasi
                         _fetchBerita();
                       } else {

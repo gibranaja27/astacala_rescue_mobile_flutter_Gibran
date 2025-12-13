@@ -18,7 +18,13 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
   @override
   void initState() {
     super.initState();
-    fetchNotifikasi();
+    _initNotifikasi();
+  }
+
+  /// 🔴 INI YANG PENTING
+  Future<void> _initNotifikasi() async {
+    await ApiService.markAllAsRead(widget.penggunaId); // tandai dibaca DULU
+    await fetchNotifikasi(); // baru ambil data
   }
 
   Future<void> fetchNotifikasi() async {
@@ -30,7 +36,6 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
 
       final data = await ApiService.getNotifikasi(widget.penggunaId);
 
-      // Filter notifikasi yang belum dihapus
       final filtered = data
           .where((item) => !deletedNotifikasiIds.contains(item['id']))
           .toList();
@@ -39,8 +44,6 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
         notifikasi = filtered;
         isLoading = false;
       });
-
-      await ApiService.markAllAsRead(widget.penggunaId);
     } catch (e) {
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,14 +82,13 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                     final item = notifikasi[index];
                     final status = item['status_verifikasi'];
                     final sudahDibaca = item['sudah_dibaca'] ?? false;
+
                     final warna = status == 'DITERIMA'
                         ? Colors.green
                         : (status == 'DITOLAK' ? Colors.red : Colors.grey);
 
                     return Card(
-                      color: sudahDibaca
-                          ? Colors.grey.shade200
-                          : Colors.white,
+                      color: sudahDibaca ? Colors.grey.shade200 : Colors.white,
                       margin: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       child: ListTile(
